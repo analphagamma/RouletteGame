@@ -1,6 +1,5 @@
 import random
 
-
 class Outcome:
     ''' The Outcome object holds a bet's name and its odds
         It can return the amount won if the bet was successful '''
@@ -394,6 +393,8 @@ class RouletteGame:
         player.placeBets() # place bets
         roll = self.wheel.next_roll() # Roll
         player.roundsToGo -= 1
+        player.winners(roll.outcomes) # sends winner Outcomes to Player
+        
         # Outcomes are compared
         for bet in self.table:
             player.stake -= bet.amountBet
@@ -435,6 +436,15 @@ class Player:
         else:
             return True
 
+    def winners(self, outcomes: set):
+        ''' Returns the set of the most recent cycle's
+            winner Outcomes.
+            In this parent class this method simply returns the
+            Outcomes.
+            :returns:
+                set. '''
+        pass
+
     def win(self, bet: Bet):
         ''' When notified by Game it increases the Player's
             stake by using the Bet's winAmount() method'''
@@ -452,8 +462,6 @@ class Passenger57(Player):
         
         self.table = table
         self.black = Outcome('Black', 1)
-        self.stake = 0
-        self.roundsToGo = 0
 
     def placeBets(self):
         ''' Places $10 on Black. '''
@@ -466,15 +474,8 @@ class Martingale(Player):
         doubling the bet after every loss and returning to the default
         bet after every win until reaching the Table limit. '''
 
-    # number of losses. It updates the self.betMultiple variable
-    
-    
     def __init__(self, table):
-        # Starts at 1 and is reset to 1 on each win and is
-        # doubled with in each loss.
         self.table = table
-        self.stake = 0
-        self.roundsToGo = 0
         self.lossCount = 0
         self.betMultiple = 1
         self.black = Outcome('Black', 1)
@@ -483,15 +484,109 @@ class Martingale(Player):
         self.table.placeBet(Bet(self.betMultiple, self.black))
 
     def win(self, bet: Bet):
+        ''' If Player wins the lossCount is reset to 0 as well as the
+            betMultiple.
+
+            :returns:
+                None '''
+            
         self.lossCount = 0
         self.betMultiple = pow(2, self.lossCount)
         super(Martingale, self).win(bet)
 
     def lose(self, bet: Bet):
+        ''' If Player loses the lossCount is incremented by one
+            and the new betMultiple is calculated.
+
+            When the bet goes over the Table limit the betMultiple is se
+            to the last valid amount.
+
+            When the betMultiple becomes bigger than the stake, it will
+            reset to 1. When this happens the session ends because the Player
+            would run out of money.
+
+            :returns:
+                None '''
+                
         self.lossCount += 1
         if pow(2, self.lossCount) < self.table.limit:
             self.betMultiple = pow(2, self.lossCount)
+        if self.betMultiple > self.stake:
+            self.betMultiple = 1
         super(Martingale, self).lose(bet)
+
+class SevenReds(Player):
+    ''' This Player waits for seven Red wins in a row and then bets
+        black.
+        There are 2 states of this class: waiting, and betting. '''
+
+    def __init__(self, table):
+        self.table = table
+        self.redCount = 0
+        self.lossCount = 0
+        self.betMultiple = 1
+        self.black = Outcome('Black', 1)
+               
+    def winners(self, outcomes: set):
+        ''' This method counts the Red Outcomes that is used
+            to determine the behaviour of the Player.
+
+            :returns:
+                None '''
+                
+        for oc in outcomes:
+            if oc.name == 'Red':
+                self.redCount += 1
+
+    def waiting(self):
+        if self.redCount != 7:
+            return True
+        else:
+            return False
+
+    def placeBets(self):
+        ''' Places bets on Black following the Martingale strategy
+            but only if 7 Red Outcome has been rolled
+
+            :returns:
+                None '''
+                
+        if not self.waiting():
+            self.redCount = 0
+            self.table.placeBet(Bet(self.betMultiple, self.black))
+
+
+    def win(self, bet: Bet):
+        ''' If Player wins the lossCount is reset to 0 as well as the
+            betMultiple
+
+            :returns:
+                None '''
+            
+        self.lossCount = 0
+        self.betMultiple = pow(2, self.lossCount)
+        super(SevenReds, self).win(bet)
+
+    def lose(self, bet: Bet):
+        ''' If Player loses the lossCount is incremented by one
+            and the new betMultiple is calculated.
+
+            When the bet goes over the Table limit the betMultiple is se
+            to the last valid amount.
+
+            When the betMultiple becomes bigger than the stake, it will
+            reset to 1. When this happens the session ends because the Player
+            would run out of money.
+
+            :returns:
+                None '''
+                
+        self.lossCount += 1
+        if pow(2, self.lossCount) < self.table.limit:
+            self.betMultiple = pow(2, self.lossCount)
+        if self.betMultiple > self.stake:
+            self.betMultiple = 1
+        super(SevenReds, self).lose(bet)
 
 class Simulator():
     ''' Main body of the application.
@@ -518,7 +613,6 @@ class Simulator():
         stakeVals = []
         self.player.setStake(self.initStake)
         self.player.setRounds(self.initDuration)
-
         while self.player.playing():
             self.game.cycle(self.player)
             stakeVals.append(self.player.stake)
@@ -540,14 +634,12 @@ class Simulator():
 
         return (durations, maxima)
 
-def main():
-    table_limit = 100
-    strategy = 'Martingale'
-    player_types = ['Passenger57', 'Martingale']
+def main(table_limit, strategy):
+    player_types = ['Passenger57', 'Martingale', 'SevenReds']
     players = {}
     for pt, sc in zip(player_types, Player.__subclasses__()):
         players[pt] = sc
-        
+    
     wh = Wheel()
     bb = BinBuilder()
     bb.buildBins(wh)
@@ -557,7 +649,4 @@ def main():
 
     sim = Simulator(pl, game)
     result = sim.gather()
-    print('Rounds left when out of money:{}\nMaximum stakes:{}'.format(result[0], result[1]))
-
-if __name__ == '__main__':
-    main()
+    print('Rounds left:{}\nMaximum stakes:{}'.format(result[0], result[1]))

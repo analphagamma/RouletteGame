@@ -1,4 +1,4 @@
-import roulette.roulette as r
+import roulette as r
 import sys
 
 def main():
