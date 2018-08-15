@@ -1,4 +1,5 @@
 import random
+from statistics import mean, stdev
 
 class Outcome:
     ''' The Outcome object holds a bet's name and its odds
@@ -588,7 +589,7 @@ class SevenReds(Player):
             self.betMultiple = 1
         super(SevenReds, self).lose(bet)
 
-class Simulator():
+class Simulator:
     ''' Main body of the application.
         Creates Wheel, Table and Game objects.
         Simulates sessions
@@ -629,10 +630,32 @@ class Simulator():
 
         for n in range(self.samples):
             stakes = self.session()
-            durations.append(self.player.roundsToGo)
+            durations.append(self.initDuration - self.player.roundsToGo)
             maxima.append(max(stakes))
 
         return (durations, maxima)
+
+class IntegerStatistics():
+    ''' Computes simple integer statistics from list inputs
+        Its methods are static methods so no instances have to be
+        created. '''
+
+    @staticmethod
+    def mean(values: list):
+        ''' Calculates the arithmetic mean of the integer elements
+            of the list.
+
+            :returns:
+                float '''
+        return round(mean(values), 5)
+    
+    def stdev(values: list):
+        ''' Calculates the standard deviation of the integer
+            elements of the list.
+
+            :returns:
+                float '''
+        return round(stdev(values), 5)
 
 def main(table_limit, strategy):
     player_types = ['Passenger57', 'Martingale', 'SevenReds']
@@ -650,3 +673,5 @@ def main(table_limit, strategy):
     sim = Simulator(pl, game)
     result = sim.gather()
     print('Rounds left:{}\nMaximum stakes:{}'.format(result[0], result[1]))
+    print('Average game length: {}, Deviation: {}'.format(IntegerStatistics.mean(result[0]), IntegerStatistics.stdev(result[0])))
+    print('Average stake: {}, Deviation: {}'.format(IntegerStatistics.mean(result[1]), IntegerStatistics.stdev(result[1])))
