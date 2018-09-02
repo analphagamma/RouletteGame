@@ -39,13 +39,24 @@ class WheelTest(unittest.TestCase):
     oc5 = Outcome('Red', 1)
     bb = BinBuilder()
 
-    def test_bin_creation(self):
+    def test1_addOutcome(self):
+        ''' Tests whether the addition of an Outcome to a Bin was successful '''
+        
+        self.wh1.addOutcome(0, self.oc1)
+        self.wh1.addOutcome(0, self.oc2)
+        self.wh1.addOutcome(1, self.oc3)
+        self.wh1.addOutcome(1, self.oc4)
+        self.wh1.addOutcome(1, self.oc5)
+        self.assertEqual(self.wh1.bins[0].outcomes, frozenset([self.oc1, self.oc2]))
+        self.assertEqual(self.wh1.bins[1].outcomes, frozenset([self.oc3, self.oc4, self.oc5]))
+
+    def test2_bin_creation(self):
         ''' Tests whether the object instantiation was successful
             by checking the number of Bin objects in the bins variable '''
             
         self.assertEqual(len(self.wh1.bins), 38)
 
-    def test_outcomecollection(self):
+    def test3_outcomecollection(self):
         ''' Generates all the Bins with their corresponding Outcomes,
             then tests the all_outcomes list with the Wheel.getOutcome method '''
             
@@ -66,18 +77,7 @@ class WheelTest(unittest.TestCase):
 
         self.assertEqual(self.wh1.getOutcome('Red'), set(['Red (odds 1:1)']))
 
-    def test_addOutcome(self):
-        ''' Tests whether the addition of an Outcome to a Bin was successful '''
-        
-        self.wh1.addOutcome(0, self.oc1)
-        self.wh1.addOutcome(0, self.oc2)
-        self.wh1.addOutcome(1, self.oc3)
-        self.wh1.addOutcome(1, self.oc4)
-        self.wh1.addOutcome(1, self.oc5)
-        self.assertEqual(self.wh1.bins[0].outcomes, frozenset([self.oc1, self.oc2]))
-        self.assertEqual(self.wh1.bins[1].outcomes, frozenset([self.oc3, self.oc4, self.oc5]))
-
-    def test_next(self):
+    def test4_next(self):
         ''' Picks a rendom element from the bins and checks if it is a valid choice
             and checks the return type'''
 
@@ -85,11 +85,19 @@ class WheelTest(unittest.TestCase):
         self.assertTrue(roll in self.wh1.bins)
         self.assertTrue(type(roll) == Bin)
 
-    def test_nonrandom_next(self):
+    def test5_nonrandom_next(self):
         ''' Tests with a controlled roll if the right Bin was chosen '''
         
         roll = self.wh1.next_roll()
         self.assertEqual(roll, self.wh1.bins[0])
+
+    def test6_binIterator(self):
+
+        wh = Wheel()
+        bb = BinBuilder()
+        bb.buildBins(wh)
+        for oc in wh.binIterator():
+            print(oc)
 
         
 if __name__ == '__main__':

@@ -84,6 +84,13 @@ class Wheel:
         ''' Returns the Bin object of the given index from this Wheel Object'''
         return self.bins[bin_index]
 
+    def binIterator(self):
+        ''' Returns a set of all Outcomes
+            :returns:
+                set'''
+        return set(self.all_outcomes)
+        
+
 class BinBuilder:
 
     def generateStraightBets(self, number: str):
@@ -460,8 +467,7 @@ class Passenger57(Player):
     ''' A Player class that only bets on Black. '''
     
     def __init__(self, table: Table):
-        
-        self.table = table
+        super().__init__(table)
         self.black = Outcome('Black', 1)
 
     def placeBets(self):
@@ -522,7 +528,7 @@ class SevenReds(Player):
         There are 2 states of this class: waiting, and betting. '''
 
     def __init__(self, table):
-        self.table = table
+        super().__init__(table)
         self.redCount = 0
         self.lossCount = 0
         self.betMultiple = 1
@@ -556,7 +562,6 @@ class SevenReds(Player):
             self.redCount = 0
             self.table.placeBet(Bet(self.betMultiple, self.black))
 
-
     def win(self, bet: Bet):
         ''' If Player wins the lossCount is reset to 0 as well as the
             betMultiple
@@ -588,6 +593,24 @@ class SevenReds(Player):
         if self.betMultiple > self.stake:
             self.betMultiple = 1
         super(SevenReds, self).lose(bet)
+
+class RandomPlayer(Player):
+
+    def __init__(self, table, rng=random):
+        super().__init__(table)
+        self.rng = rng
+        # creating a Wheel class to get a setof all Outcomes
+        wh = Wheel()
+        bb = BinBuilder()
+        bb.buildBins(wh)
+        self.all_OC = wh.binIterator()
+
+    def placeBets(self):
+        ''' Acquires all Outcomes, randomly picks one and places a bet.'''
+        
+        for i, oc in enumerate(self.all_OC):
+            if i == self.rng.randint(0, len(self.all_OC)):
+                self.table.placeBet(Bet(10, oc))
 
 class Simulator:
     ''' Main body of the application.
@@ -658,7 +681,7 @@ class IntegerStatistics():
         return round(stdev(values), 5)
 
 def main(table_limit, strategy):
-    player_types = ['Passenger57', 'Martingale', 'SevenReds']
+    player_types = ['Passenger57', 'Martingale', 'SevenReds', 'RandomPlayer']
     players = {}
     for pt, sc in zip(player_types, Player.__subclasses__()):
         players[pt] = sc
@@ -672,6 +695,6 @@ def main(table_limit, strategy):
 
     sim = Simulator(pl, game)
     result = sim.gather()
-    print('Rounds left:{}\nMaximum stakes:{}'.format(result[0], result[1]))
+    print('Rounds played:{}\nMaximum stakes:{}'.format(result[0], result[1]))
     print('Average game length: {}, Deviation: {}'.format(IntegerStatistics.mean(result[0]), IntegerStatistics.stdev(result[0])))
     print('Average stake: {}, Deviation: {}'.format(IntegerStatistics.mean(result[1]), IntegerStatistics.stdev(result[1])))
