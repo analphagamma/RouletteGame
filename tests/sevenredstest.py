@@ -1,16 +1,16 @@
 import unittest
-from roulette import *
+from context import wheel, binbuilder, table, roulettegame, players
 from wheeltest import NonRandom
 
 class SevenRedsTest(unittest.TestCase):
 
     nrnd = NonRandom(1) # rolls 1, Odd, Red
-    wh = Wheel(nrnd)
-    bb = BinBuilder()
+    wh = wheel.Wheel(nrnd)
+    bb = binbuilder.BinBuilder()
     bb.buildBins(wh)
-    t = Table(1000)
-    game = RouletteGame(wh, t) 
-    pl = SevenReds(t)
+    t = table.Table(1000)
+    game = roulettegame.RouletteGame(wh, t) 
+    pl = players.SevenReds(t)
     pl.setStake(100)
     pl.setRounds(10)
     

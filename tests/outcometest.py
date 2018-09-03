@@ -1,14 +1,14 @@
 import unittest
-from roulette import *
+from context import outcome
 
 
 class OutcomeTest(unittest.TestCase):
     ''' Tests the class:Outcome
         creates 3 instances 2 of which are identical '''
 
-    oc1 = Outcome('1', 35)
-    oc2 = Outcome('1', 35)
-    oc3 = Outcome('35', 35)
+    oc1 = outcome.Outcome('1', 35)
+    oc2 = outcome.Outcome('1', 35)
+    oc3 = outcome.Outcome('35', 35)
 
     def test_equaltrue(self):
         ''' Tests equality between 2 objects '''

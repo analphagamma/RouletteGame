@@ -1,15 +1,15 @@
 import unittest
-from roulette import *
+from context import outcome, bet, table
 
 class TableTest(unittest.TestCase):
 
-    oc1 = Outcome('Line 0-00-1-2-3', 5)
-    oc2 = Outcome('Red', 1)
-    bet1 = Bet(110, oc1)
-    bet2 = Bet(5, oc2)
-    t0 = Table(100)
-    t1 = Table(100)
-    t2 = Table(200)
+    oc1 = outcome.Outcome('Line 0-00-1-2-3', 5)
+    oc2 = outcome.Outcome('Red', 1)
+    bet1 = bet.Bet(110, oc1)
+    bet2 = bet.Bet(5, oc2)
+    t0 = table.Table(100)
+    t1 = table.Table(100)
+    t2 = table.Table(200)
       
     def test1_isvalid(self):
         ''' Tests the bet validity check
@@ -27,7 +27,7 @@ class TableTest(unittest.TestCase):
             
         self.t0.placeBet(self.bet2)
         self.assertEqual(self.t0.bets, [self.bet2])
-        self.assertRaises(InvalidBet, self.t0.placeBet, self.bet1)
+        self.assertRaises(table.InvalidBet, self.t0.placeBet, self.bet1)
         
     def test3_str(self):
         ''' Tests the str output of the class

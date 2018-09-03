@@ -1,5 +1,5 @@
 import unittest, random
-from roulette import *
+from context import wheel, outcome, bin, binbuilder
 
 class NonRandom(random.Random):
     ''' A Non-random generator for testing purposes '''
@@ -31,13 +31,13 @@ class WheelTest(unittest.TestCase):
         It tests the addition and the random rolls'''
 
     nrnd = NonRandom(0)
-    wh1 = Wheel(nrnd)
-    oc1 = Outcome('Number 0', 35)
-    oc2 = Outcome('Line 0-00-1-2-3', 5)
-    oc3 = Outcome('Split 1-2', 17)
-    oc4 = Outcome('Line 1-2-3-4-5-6', 5)
-    oc5 = Outcome('Red', 1)
-    bb = BinBuilder()
+    wh1 = wheel.Wheel(nrnd)
+    oc1 = outcome.Outcome('Number 0', 35)
+    oc2 = outcome.Outcome('Line 0-00-1-2-3', 5)
+    oc3 = outcome.Outcome('Split 1-2', 17)
+    oc4 = outcome.Outcome('Line 1-2-3-4-5-6', 5)
+    oc5 = outcome.Outcome('Red', 1)
+    bb = binbuilder.BinBuilder()
 
     def test1_addOutcome(self):
         ''' Tests whether the addition of an Outcome to a Bin was successful '''
@@ -83,21 +83,13 @@ class WheelTest(unittest.TestCase):
 
         roll = self.wh1.next_roll()
         self.assertTrue(roll in self.wh1.bins)
-        self.assertTrue(type(roll) == Bin)
+        self.assertTrue(type(roll) == bin.Bin)
 
     def test5_nonrandom_next(self):
         ''' Tests with a controlled roll if the right Bin was chosen '''
         
         roll = self.wh1.next_roll()
         self.assertEqual(roll, self.wh1.bins[0])
-
-    def test6_binIterator(self):
-
-        wh = Wheel()
-        bb = BinBuilder()
-        bb.buildBins(wh)
-        for oc in wh.binIterator():
-            print(oc)
 
         
 if __name__ == '__main__':

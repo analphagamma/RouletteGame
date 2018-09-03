@@ -1,5 +1,5 @@
 import unittest
-from roulette import *
+from context import wheel, binbuilder, table, roulettegame, players
 from wheeltest import NonRandom
 
 class RouletteGameTest(unittest.TestCase):
@@ -8,12 +8,12 @@ class RouletteGameTest(unittest.TestCase):
         ''' Tests winning process. '''
 
         nrnd = NonRandom(2)
-        wh = Wheel(nrnd)
-        bb = BinBuilder()
+        wh = wheel.Wheel(nrnd)
+        bb = binbuilder.BinBuilder()
         bb.buildBins(wh)
-        t = Table(100)
-        game = RouletteGame(wh, t)        
-        pl = Passenger57(t)
+        t = table.Table(100)
+        game = roulettegame.RouletteGame(wh, t)        
+        pl = players.Passenger57(t)
         pl.setStake(100)
         pl.setRounds(10)
 
@@ -25,12 +25,12 @@ class RouletteGameTest(unittest.TestCase):
         ''' Tests losing process. '''
         
         nrnd = NonRandom(1)
-        wh = Wheel(nrnd)
-        bb = BinBuilder()
+        wh = wheel.Wheel(nrnd)
+        bb = binbuilder.BinBuilder()
         bb.buildBins(wh)
-        t = Table(100)
-        game = RouletteGame(wh, t)        
-        pl = Passenger57(t)
+        t = table.Table(100)
+        game = roulettegame.RouletteGame(wh, t)        
+        pl = players.Passenger57(t)
         pl.setStake(100)
         pl.setRounds(10)
 
@@ -42,12 +42,12 @@ class RouletteGameTest(unittest.TestCase):
         ''' Tests if the cycle breaks when the Player's stake is zero '''
 
         nrnd = NonRandom(1)
-        wh = Wheel(nrnd)
-        bb = BinBuilder()
+        wh = wheel.Wheel(nrnd)
+        bb = binbuilder.BinBuilder()
         bb.buildBins(wh)
-        t = Table(100)
-        game = RouletteGame(wh, t)        
-        pl = Passenger57(t)
+        t = table.Table(100)
+        game = roulettegame.RouletteGame(wh, t)        
+        pl = players.Passenger57(t)
         pl.setStake(100)
         pl.setRounds(10)
 
@@ -58,12 +58,12 @@ class RouletteGameTest(unittest.TestCase):
 
     def test4_nomorerounds(self):
         nrnd = NonRandom(2)
-        wh = Wheel(nrnd)
-        bb = BinBuilder()
+        wh = wheel.Wheel(nrnd)
+        bb = binbuilder.BinBuilder()
         bb.buildBins(wh)
-        t = Table(100)
-        game = RouletteGame(wh, t)        
-        pl = Passenger57(t)
+        t = table.Table(100)
+        game = roulettegame.RouletteGame(wh, t)        
+        pl = players.Passenger57(t)
         pl.setStake(100)
         pl.setRounds(10)
        
