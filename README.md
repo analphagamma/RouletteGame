@@ -2,7 +2,7 @@
 
 An interpretation of Steven F. Lott's Building Skills in Object-Oriented Design in Python.
 
-##Usage
+## Usage
 
 To run in the Terminal run Python with 2 arguments:
 * the game's table limit (integer)
@@ -12,8 +12,8 @@ To run in the Terminal run Python with 2 arguments:
                           SevenReds (waits for 7 Reds and then bets Black using Martingale),
                           RandomPlayer (bets $10 on a random outcome)
 
-`python RouletteGame.py <*table_limit*> <*strategy*>`
+`python RouletteGame.py < *table_limit* > < *strategy* >`
 
-##Dependencies
+## Dependencies
 
 None. Standard Python3.
