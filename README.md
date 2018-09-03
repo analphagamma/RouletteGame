@@ -12,7 +12,7 @@ To run in the Terminal run Python with 2 arguments:
                           SevenReds (waits for 7 Reds and then bets Black using Martingale),
                           RandomPlayer (bets $10 on a random outcome)
 
-`python RouletteGame.py < *table_limit* > < *strategy* >`
+`python RouletteGame.py <table_limit> <strategy>`
 
 ## Dependencies
 
